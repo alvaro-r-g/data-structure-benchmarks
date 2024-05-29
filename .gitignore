@@ -1,0 +1,5 @@
+/build
+/graphs
+/results
+.cache
+__pycache__
