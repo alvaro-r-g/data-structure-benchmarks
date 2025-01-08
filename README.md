@@ -5,7 +5,7 @@ This repository adds structures with the following sycnhronization mechanisms to
 
 - [Flock](https://github.com/cmuparlay/flock)
 - HTM (Hardware Transactional Memory)
-- MCAS (Multi-address Compare-And-Swap)
+- New MCAS (Multi-address Compare-And-Swap) variants
 
 Flock library source code was imported from [Verlib](https://github.com/cmuparlay/verlib/tree/main/include/flock) to allow scheduling with `pthreads`.
 
