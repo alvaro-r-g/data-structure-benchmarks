@@ -1,7 +1,7 @@
 
 # Data Structure Benchmarks
 
-This repository adds structures with the following sycnhronization mechanisms to [mcas-benchmarks](https://github.com/kankava/mcas-benchmarks):
+This repository adds structures with the following synchronization mechanisms to [mcas-benchmarks](https://github.com/kankava/mcas-benchmarks):
 
 - [Flock](https://github.com/cmuparlay/flock)
 - HTM (Hardware Transactional Memory)
@@ -9,12 +9,14 @@ This repository adds structures with the following sycnhronization mechanisms to
 
 Flock library source code was imported from [Verlib](https://github.com/cmuparlay/verlib/tree/main/include/flock) to allow scheduling with `pthreads`.
 
+The benchmarks have been tested in Ubuntu 18.04.6 LTS.
+
 ## Requirements
 
 - Processor with Intel TSX extensions enabled, including support for [RTM](https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/restricted-transactional-memory-overview.html) (needed for HTM structures).
 - jemalloc-5.2.1 (needed for Flock): <https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2>
-  - To install, extract and follow instructions in the INSTALL text file
-  - Then run ```sudo apt install libjemalloc-dev```
+  - To install, extract and follow instructions in `INSTALL.md`
+  - Then run `sudo apt install libjemalloc-dev`
   - If you install jemalloc locally instead, change the path in CMakeLists.txt (`find_library(JEMALLOC_LIB jemalloc PATHS ~/local/jemalloc/lib/)`) to your local path
 - python3 and matplotlib
 
