@@ -5,6 +5,7 @@
 
 #include <climits>
 #include <mutex>
+#include <iostream>
 
 namespace lockbased {
 
@@ -123,7 +124,7 @@ class BinarySearchTree {
   void print() {
     std::cout << "Printing" << std::endl;
     if (root) print(root);
-    std::cout << endl;
+    std::cout << std::endl;
   }
 
   void print(Node *p) {
