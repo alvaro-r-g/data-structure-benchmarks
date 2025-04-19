@@ -15,8 +15,7 @@ int main(int argc, char *argv[])
   __parsec_bench_begin (__splash2_barnes);
 #endif
 
-  // parse options
-  cxxopts::Options options("mcas_benchmark", "A brief description");
+  cxxopts::Options options("mcas_benchmark");
 
   options.add_options()
       ("n,nthreads", "Number of threads", cxxopts::value<int>()->default_value("1"))
@@ -32,7 +31,7 @@ int main(int argc, char *argv[])
   if (result.count("help"))
   {
     std::cout << options.help() << std::endl;
-    exit(0);
+    return EXIT_SUCCESS;
   }
 
   // generate configuration
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
   if (conf.sync_type == Configuration::SyncType::SYNC_UNDEF) {
     std::cout << "sync type is not defined" << std::endl;
     std::cout << options.help() << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
 
   if (result.count("algorithm")) {
@@ -81,7 +80,7 @@ int main(int argc, char *argv[])
   if (conf.benchmarking_algorithm == Configuration::BenchmarkAlgorithm::ALG_UNDEF) {
     std::cout << "algorithm is not defined" << std::endl;
     std::cout << options.help() << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
 
   if (conf.debug) {
@@ -101,5 +100,5 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_bench_end();
 #endif
-  return 0;
+  return EXIT_SUCCESS;
 }
