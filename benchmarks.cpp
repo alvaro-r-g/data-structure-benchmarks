@@ -140,14 +140,22 @@ void benchmark_htm_lock_mwobject(const Configuration& config) {
     uint64_t d;
   } counters{};
 
-  benchmark(config, u8"update", [&counters] (int random) {
-    TM_BEGIN(0);
-    counters.a++;
-    counters.b++;
-    counters.c++;
-    counters.d++;
-    TM_END(0);
-  });
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_begin();
+#endif
+  {
+    benchmark(config, u8"update", [&counters] (int random) {
+      TM_BEGIN(0);
+      counters.a++;
+      counters.b++;
+      counters.c++;
+      counters.d++;
+      TM_END(0);
+    });
+  }
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_end();
+#endif
 
 }
 
@@ -160,21 +168,28 @@ void benchmark_flock_mwobject(const Configuration& config) {
   };
 
   target counters;
-
-  benchmark(config, u8"update", [&counters](int random) {
-    flck::with_epoch([&counters] {
-      // flck lambdas should generally capture by value because their usage
-      // might outlive local context, but here it means copying a pointer to
-      // counters and counters will outlive usage of the lambda
-      counters.with_lock([&counters] {
-        counters.a = (counters.a).load() + 1;
-        counters.b = (counters.b).load() + 1;
-        counters.c = (counters.c).load() + 1;
-        counters.d = (counters.d).load() + 1;
-        return true;
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_begin();
+#endif
+  {
+    benchmark(config, u8"update", [&counters](int random) {
+      flck::with_epoch([&counters] {
+        // flck lambdas should generally capture by value because their usage
+        // might outlive local context, but here it means copying a pointer to
+        // counters and counters will outlive usage of the lambda
+        counters.with_lock([&counters] {
+          counters.a = (counters.a).load() + 1;
+          counters.b = (counters.b).load() + 1;
+          counters.c = (counters.c).load() + 1;
+          counters.d = (counters.d).load() + 1;
+          return true;
+        });
       });
     });
-  });
+  }
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_end();
+#endif
 }
 
 void benchmark_arrayswap(const Configuration& config) {
@@ -230,16 +245,24 @@ void benchmark_mcas_arrayswap(const Configuration& config) {
 void benchmark_htm_lock_arrayswap(const Configuration& config) {
   htm_lock::ArraySwap::initialize();
 
-  benchmark(config, u8"update", [](int random) {
-    /* set up random number generator */
-    std::random_device rd;
-    std::mt19937 engine(rd());
-    std::uniform_int_distribution<int> uniform_dist(0, htm_lock::ArraySwap::NUM_ROWS-1);
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_begin();
+#endif
+  {
+    benchmark(config, u8"update", [](int random) {
+      /* set up random number generator */
+      std::random_device rd;
+      std::mt19937 engine(rd());
+      std::uniform_int_distribution<int> uniform_dist(0, htm_lock::ArraySwap::NUM_ROWS-1);
 
-    int index_a = uniform_dist(engine);
-    int index_b = uniform_dist(engine);
-    htm_lock::ArraySwap::swap(index_a, index_b);
-  });
+      int index_a = uniform_dist(engine);
+      int index_b = uniform_dist(engine);
+      htm_lock::ArraySwap::swap(index_a, index_b);
+    });
+  }
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_end();
+#endif
 
   htm_lock::ArraySwap::datum_free(htm_lock::ArraySwap::S);
 }
@@ -247,6 +270,10 @@ void benchmark_htm_lock_arrayswap(const Configuration& config) {
 void benchmark_flock_arrayswap(const Configuration& config) {
   lockfree_flock::ArraySwap::initialize();
 
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_begin();
+#endif
+  {
   benchmark(config, u8"update", [](int random) {
     /* set up random number generator */
     std::random_device rd;
@@ -257,6 +284,10 @@ void benchmark_flock_arrayswap(const Configuration& config) {
     int index_b = uniform_dist(engine);
     lockfree_flock::ArraySwap::swap(index_a, index_b);
   });
+  }
+#ifdef ENABLE_PARSEC_HOOKS
+  __parsec_roi_end();
+#endif
 
   lockfree_flock::ArraySwap::datum_free(lockfree_flock::ArraySwap::S);
 }
